@@ -19,3 +19,8 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+    
+class UserSession(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    session_key = models.CharField(max_length=40)
+  

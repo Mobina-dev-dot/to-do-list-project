@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Task
 from .forms import TaskForm
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.http import require_POST
 
 def signup(request):
     if request.method == 'POST':
@@ -18,6 +18,12 @@ def signup(request):
 @login_required
 def task_list(request):
     tasks = Task.objects.filter(owner=request.user)
+    return render(request, 'todo/task_list.html', {'tasks': tasks})
+
+@login_required
+def task_search(request):
+    q = request.GET.get('q', '')
+    tasks = Task.objects.filter(owner=request.user, title__icontains=q)
     return render(request, 'todo/task_list.html', {'tasks': tasks})
 
 @login_required
@@ -46,6 +52,7 @@ def task_update(request, task_id):
     return render(request, 'todo/task_form.html', {'form': form})
 
 @login_required
+@require_POST
 def task_toggle(request, task_id):
     task = get_object_or_404(Task, id=task_id, owner=request.user)
     task.completed = not task.completed
@@ -53,6 +60,7 @@ def task_toggle(request, task_id):
     return redirect('task_list')
 
 @login_required
+@require_POST
 def task_delete(request, task_id):
     task = get_object_or_404(Task, id=task_id, owner=request.user)
     task.delete()

@@ -7,21 +7,27 @@
 </head>
 <body>
     <div class="container">
-    <div style="margin-bottom: 15px; font-size: 14px;">
-    {% if user.is_authenticated %}
-     welcome {{ user.username }} |
-    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" style="border: none; background: none; color: blue; text-decoration: underline; cursor: pointer; font-size: 14px; padding: 0;">Exit</button>
-    </form>
-{% else %}
-        <a href="{% url 'login' %}">Log in</a> |
-        <a href="{% url 'signup' %}">Registration</a>
-    {% endif %}
-</div>    
+        <div style="margin-bottom: 15px; font-size: 14px;">
+            {% if user.is_authenticated %}
+                welcome {{ user.username }} |
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="border: none; background: none; color: blue; text-decoration: underline; cursor: pointer; font-size: 14px; padding: 0;">Exit</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Log in</a> |
+                <a href="{% url 'signup' %}">Registration</a>
+            {% endif %}
+        </div>
+
         <h1>My Tasks</h1>
 
         <a href="{% url 'task_create' %}" class="add-link">+ add new task</a>
+
+        <form method="get" action="{% url 'task_search' %}" style="margin: 10px 0;">
+            <input type="text" name="q" placeholder="Search tasks...">
+            <button type="submit">Search</button>
+        </form>
 
         <ul>
             {% for task in tasks %}
@@ -37,14 +43,18 @@
                     </span>
                     <span class="actions">
                         <a href="{% url 'task_update' task.id %}">✏️</a>
-                        <a href="{% url 'task_toggle' task.id %}">
-                            {% if task.completed %}
-                                ✅
-                            {% else %}
-                                ❌
-                            {% endif %}
-                        </a>
-                        <a href="{% url 'task_delete' task.id %}">delete</a>
+
+                        <form method="post" action="{% url 'task_toggle' task.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="border:none; background:none; cursor:pointer; font-size:16px; padding:0;">
+                                {% if task.completed %}✅{% else %}❌{% endif %}
+                            </button>
+                        </form>
+
+                        <form method="post" action="{% url 'task_delete' task.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="border:none; background:none; color:red; cursor:pointer; font-size:14px; padding:0;">delete</button>
+                        </form>
                     </span>
                 </li>
             {% endfor %}
