@@ -6,4 +6,5 @@ class TodoConfig(AppConfig):
     name = 'todo'
 
     def ready(self):
-        from . import signals
+        pass  # from . import signals  (concurrent session control disabled)
+             
